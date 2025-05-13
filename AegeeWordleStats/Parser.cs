@@ -36,7 +36,7 @@ public class Parser
 
     public static List<GameState> GroupByMessage(string input)
     {
-        var i = Regex.Split(input, @"(\d{1,2}\/\d{1,2}\/\d{2}, \d{2}:\d{2}) - (\+(\d|\s)+|(\w|\s)+): ")
+        var i = Regex.Split(input, @"(\d{1,2}\/\d{1,2}\/\d{2,4}, \d{2}:\d{2}) - (\+(\d|\s)+|(\w|\s)+): ")
             .Where(s => s.Length > 1)
             .Chunk(3);
             return i.Select(strings 

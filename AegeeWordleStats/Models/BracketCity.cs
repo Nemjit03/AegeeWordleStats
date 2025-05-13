@@ -11,16 +11,15 @@ public class BracketCity : Game
         Stats.FinalScore = Convert.ToInt32(Math.Round(Convert.ToDecimal(FinalScore.GetStr(toParse))));
         ScoreOf1000 = Stats.FinalScore * 10;
 
-        Stats.WrongGuesses = WrongGuesses.GetInt(toParse);
-        Stats.Peeks = Peeks.GetInt(toParse);
-        Stats.AnswersRevealed = AnswersRevealed.GetInt(toParse);
+        if (Peeks.IsMatch(toParse)) Stats.WrongGuesses = WrongGuesses.GetInt(toParse);
+        if (Peeks.IsMatch(toParse)) Stats.Peeks = Peeks.GetInt(toParse);
+        if (AnswersRevealed.IsMatch(toParse)) Stats.AnswersRevealed = AnswersRevealed.GetInt(toParse);
+        Stats.MinimalKeyStrokes = MinimalKeyStrokes.IsMatch(toParse);
     }
 
     public static bool IsMatch(string toMatch)
     {
         return WrongGuesses.IsMatch(toMatch)
-               && Peeks.IsMatch(toMatch)
-               && AnswersRevealed.IsMatch(toMatch)
                && FinalScore.IsMatch(toMatch)
                && Link.IsMatch(toMatch);
     }
@@ -29,12 +28,14 @@ public class BracketCity : Game
     private static readonly SingleRegex Peeks = new(@"Peeks: (\d+)");
     private static readonly SingleRegex AnswersRevealed = new(@"Answers Revealed: (\d+)");
     private static readonly SingleRegex FinalScore = new(@"Total Score: (\d{1,3}\.\d)");
+    private static readonly SingleRegex MinimalKeyStrokes = new(@".+ Total Keystrokes: \d+.+\s+.+ Minimum Required: \d+", RegexOptions.Multiline);
     private static readonly SingleRegex Link = new(@"https://www\.theatlantic\.com/games/bracket-city/");
+    
 
     public override List<string> ToRow()
     {
         List<string> baseRow = base.ToRow();
-        baseRow.AddRange([Stats.WrongGuesses.ToString(), Stats.Peeks.ToString(), Stats.AnswersRevealed.ToString(), Stats.FinalScore.ToString()]);
+        baseRow.AddRange([Stats.WrongGuesses.ToString(), Stats.Peeks.ToString(), Stats.AnswersRevealed.ToString(), Stats.MinimalKeyStrokes.ToString(), Stats.FinalScore.ToString()]);
         return baseRow;
     }
 }
@@ -45,6 +46,7 @@ public struct BracketCityStats
     public int Peeks;
     public int AnswersRevealed;
     public int FinalScore;
+    public bool MinimalKeyStrokes;
 }
 /*
    [Bracket City]
@@ -59,4 +61,19 @@ public struct BracketCityStats
 
    Total Score: 44.0
    🟨🟨🟨🟨⬜⬜⬜⬜⬜⬜
+*/
+
+
+//// PERFECT MET MINIMAL KEYSTROKES
+/* [Bracket City]
+May 11, 2025
+
+https://www.theatlantic.com/games/bracket-city/
+
+Rank: 🔮 (Puppet Master)
+🎹 Total Keystrokes: 70
+🎯 Minimum Required: 70
+
+Total Score: 100.0
+🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪
 */

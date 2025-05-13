@@ -9,7 +9,7 @@
         public EffectiveValue EffectiveValue { get; set; }
 
         [JsonPropertyName("formattedValue")]
-        public string FormattedValue { get; set; }
+        public string? FormattedValue { get; set; }
 
         [JsonPropertyName("effectiveFormat")]
         public EffectiveFormat EffectiveFormat { get; set; }

@@ -1,5 +1,5 @@
 using System.Text;
-using AegeeWordleStats.Models;
+using AegeeWordleStats.SpreadsheetResponseModel;
 using Google.Apis.Sheets.v4;
 using Newtonsoft.Json;
 

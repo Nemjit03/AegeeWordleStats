@@ -1,9 +1,7 @@
-using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using AegeeWordleStats.Models;
-using BindingFlags = System.Reflection.BindingFlags;
-using GamesPerDay = (System.DateTime dt, AegeeWordleStats.Models.Game game);
+using AegeeWordleStats.Games;
+
 namespace AegeeWordleStats;
 
 public class Parser
@@ -27,9 +25,8 @@ public class Parser
         Type? gameType = Game.GetType(gs.gameresult);
         if (gameType == null) throw new NoGameResultException();
 
-        var ctor = gameType.GetConstructor([typeof(string), typeof(string), typeof(DateTime)]);
-        var game = ctor.Invoke([gs.gameresult, gs.player, DateTime.Parse(gs.datetime)]) as Game;
-        if (game == null) throw new NoGameResultException();
+        ConstructorInfo? ctor = gameType.GetConstructor([typeof(string), typeof(string), typeof(DateTime)]);
+        if (ctor.Invoke([gs.gameresult, gs.player, gs.datetime]) is not Game game) throw new NoGameResultException();
 
         GamesList.Add(game);
     }
@@ -40,8 +37,13 @@ public class Parser
             .Where(s => s.Length > 1)
             .Chunk(3);
             return i.Select(strings 
-                => new GameState(strings[0], strings[1], strings[2]))
+                => new GameState(DateTime.Parse(strings[0]), strings[1], strings[2]))
             .ToList();
+    }
+
+    public void ParseList(string lines)
+    {
+        foreach (GameState i1 in GroupByMessage(lines)) TryParse(i1);
     }
 }
 

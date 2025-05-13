@@ -1,3 +1,3 @@
 // Global using directives
 
-global using GameState = (string datetime, string player, string gameresult);
+global using GameState = (System.DateTime datetime, string player, string gameresult);

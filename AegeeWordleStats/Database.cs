@@ -1,8 +1,49 @@
+using Microsoft.Data.Sqlite;
+
 namespace AegeeWordleStats;
 
 public class Database
 {
-        
+    public static string getDatabase()
+    {
+        using (SqliteConnection connection = new SqliteConnection("Data Source=/home/nemjit/backups/31630562546_20250513-decrypted/Databases/msgstore.db;"))
+        {
+            connection.Open();
+
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText =
+                @"
+                    SELECT
+                        message._id as id,
+                        (CASE WHEN message.from_me IS 0
+                                  THEN SUBSTR(jid.raw_string,1, INSTR(jid.raw_string, '@')-1) 
+                            ELSE '31630562546' END) as phone_number,
+                        DATETIME(ROUND(message.timestamp / 1000), 'unixepoch') as datetime,
+                        IFNULL(message.text_data, '') as content
+                    FROM message
+                             LEFT JOIN jid ON jid._id = message.sender_jid_row_id
+                    WHERE message.chat_row_id = 3476
+                    ORDER BY message.timestamp DESC
+                ";
+            
+            using (SqliteDataReader reader = command.ExecuteReader())
+            {
+                reader.Read();
+                while (reader.Read())
+                {
+                    string id = reader.GetString(0);
+                    string name = NameAliases.Convert(reader.GetString(1));
+                    DateTime time = reader.GetDateTime(2);
+                    string content = reader.GetString(3);
+                    GameState gs =  new();
+                    
+                    Console.WriteLine($"Hello, {name}, {time.ToString("")}!");
+                }
+            }
+        }
+
+        return null;
+    }
 }
 /* Extracting database from google in shell ->
 wabdd download --master-token /home/nemjit/tokens/tijmenpvis_gmail_com_mastertoken.txt \

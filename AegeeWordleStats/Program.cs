@@ -1,16 +1,10 @@
 ﻿using System.Globalization;
-using System.Runtime.Intrinsics;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
+using AegeeWordleStats.Games;
 using AegeeWordleStats.Google;
-using AegeeWordleStats.Models;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using GetSpreadsheetResponse = AegeeWordleStats.SpreadsheetResponseModel.GetSpreadsheetResponse;
+using Sheet = AegeeWordleStats.SpreadsheetResponseModel.Sheet;
 
 namespace AegeeWordleStats;
 
@@ -36,10 +30,11 @@ class Program
 
         string lines = File.ReadLines(args[0]).Skip(3).Aggregate((s1, s2) => s1 + Environment.NewLine + s2);
         Parser p = new();
-        foreach (GameState i1 in Parser.GroupByMessage(lines)) p.TryParse(i1);
-        
-        ClearAndFill(requests, p.GamesList);
-        // RepeatFill(p.GamesList, data, requests);
+        p.ParseList(lines);
+
+        Database.getDatabase();
+        // ClearAndFill(requests, p.GamesList);
+        // RepeatFill(p.GamesList, requests);
         // ClearAllGames(requests, p.GamesList);
         // ForEach(p.GamesList, data, requests);
         // ForEach(p.GamesList.FindAll(t => t.GetType() == typeof(TimeGuessr)), data, requests);
